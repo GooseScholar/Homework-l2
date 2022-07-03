@@ -30,44 +30,34 @@ func main() {
 	}
 }
 
+//Функция распаковки
 func (p pkgString) Unpack() string {
-	//Если ничего, то ничего
-	if p == "" {
+	if p == "" { //Если ничего, то ничего
 		return ""
 	}
-	//Строку на входе превращаем в слайс рун
-	message := []rune(p)
-	//Слайс рун в который записываем процесс распаковывания
-	result := make([]rune, 0, 25)
-	//Отслеживет появление `\`
-	var esc bool
+
+	message := []rune(p)          //Строку на входе превращаем в слайс рун
+	result := make([]rune, 0, 25) //Слайс рун в который записываем процесс распаковывания
+	var esc bool                  //Отслеживет появление `\`
 
 	for i, oneRune := range message {
-		//если первый символ строки это число, то выводим ошибку
-		if unicode.IsDigit(oneRune) && i == 0 {
+		if unicode.IsDigit(oneRune) && i == 0 { //если первый символ строки это число, то выводим ошибку
 			return "(некорректная строка)"
 		}
-
-		//если пришла буква, то пишем её
-		if unicode.IsLetter(oneRune) {
+		if unicode.IsLetter(oneRune) { //если пришла буква, то пишем её
 			result = append(result, oneRune)
 
 		}
 		if unicode.IsDigit(oneRune) {
-			//распознаем цифру
-			counter, err := strconv.Atoi(string(oneRune))
-			//возвращение ошибки, если не удалось конвертировать руну в int
-			if err != nil {
+			counter, err := strconv.Atoi(string(oneRune)) //распознаем цифру
+			if err != nil {                               //возвращение ошибки, если не удалось конвертировать руну в int
 				log.Printf("Ошибка конвертации в int: %v", err)
 				return "(некорректная строка)"
 			}
-
-			//Если предыдущий символ `\`
-			if esc == true {
+			if esc == true { //Если предыдущий символ `\`
 				result = append(result, oneRune)
 				esc = false
-			} else if counter > 1 {
-				//дописать оставшиеся буквы (число минус 1, т.к. предыдущий сымвол уже записан)
+			} else if counter > 1 { //дописать оставшиеся буквы (число минус 1, т.к. предыдущий сымвол уже записан)
 				for j := 0; j < counter-1; j++ {
 					result = append(result, message[i-1])
 				}
@@ -84,8 +74,6 @@ func (p pkgString) Unpack() string {
 				esc = true
 			}
 		}
-
 	}
-
 	return string(result)
 }
