@@ -16,7 +16,6 @@ import (
 
 //Пример запроса echo "who" | go run main.go -A=2
 
-//name `filePath` (string) | str `search` (string)  | -A `after` - N(int) | -B `before` - N(int) | -C `context` -N(int) | c `count` (bool) | i `ignore-case` (bool) | v `invert` (bool) | F `fixed` (bool) | n `line num`
 func main() {
 	var name, search, input string
 	var A, B, C int
@@ -32,17 +31,17 @@ func main() {
 	}
 	search = strings.TrimSpace(input)
 
-	flag.BoolVar(&c, "c", false, "count")
-	flag.BoolVar(&i, "i", false, "ignore-case")
-	flag.BoolVar(&v, "v", false, "invert") //
-	flag.BoolVar(&F, "F", false, "fixed")
-	flag.BoolVar(&n, "n", false, "line num") //Номерация строк начинается с 0
+	flag.BoolVar(&c, "c", false, "count")       // количество строк
+	flag.BoolVar(&i, "i", false, "ignore-case") //игнорировать регистр
+	flag.BoolVar(&v, "v", false, "invert")      //вместо совпадения, исключать
+	flag.BoolVar(&F, "F", false, "fixed")       //точное совпадение со строкой, не паттерн
+	flag.BoolVar(&n, "n", false, "line num")    //напечатать номер строки, номерация строк начинается с 0
 
 	flag.StringVar(&name, "name", "test.txt", "file-path")
 
-	flag.IntVar(&A, "A", 0, "after")
-	flag.IntVar(&B, "B", 0, "before")
-	flag.IntVar(&C, "C", 0, "context")
+	flag.IntVar(&A, "A", 0, "after")   //печатать +N строк после совпадения
+	flag.IntVar(&B, "B", 0, "before")  //печатать +N строк до совпадения
+	flag.IntVar(&C, "C", 0, "context") //печатать ±N строк вокруг совпадения
 
 	flag.Parse()
 
@@ -53,7 +52,7 @@ func main() {
 			fmt.Println(len(data))
 		}
 		if n == true {
-			fmt.Println(lineNum(data, search))
+			lineNum(data, search)
 		}
 	} else {
 		if C != 0 {
@@ -70,6 +69,7 @@ func main() {
 	}
 }
 
+//Чтение файла
 func readFile(name string, ig, F bool) (data []string) {
 	file, err := os.OpenFile(name, os.O_RDWR, 0666)
 	if err != nil {
@@ -107,177 +107,140 @@ func readFile(name string, ig, F bool) (data []string) {
 	return
 }
 
-func lineNum(data []string, search string) (output []int) {
-	output = make([]int, 0, 10)
+//Вывод номеров строк совпадения
+func lineNum(data []string, search string) {
+	out := make([]int, 0, 10)
 	for i, str := range data {
 		if search == str {
-			output = append(output, i) //Номерация строк начинается с 0
+			out = append(out, i) //Номерация строк начинается с 0
 		}
 	}
-	fmt.Println(output)
-	return
+	fmt.Println(out)
+
 }
 
+//Вывод N строк после совпадения
 func sampleSearchA(data []string, search string, N int, v bool) {
-	output := make([]string, 0, 10)
+	outB := make([]bool, 0, len(data)) //слайс для учета N строк после совмадения
+	for i := 0; i < len(data); i++ {
+		outB = append(outB, false)
+	}
+	out := make([]string, 0, 10)
 
-	for i, str := range data {
+	for a, str := range data { //поиск совпадений
 		if search == str {
-			if N < len(data)-(i+1) {
-				if v != true {
-					for _, val := range data[i+1 : i+N+1] {
-						output = append(output, val)
-					}
-				} else {
-					for j := 0; j < N; j++ {
-						copy(data[i+1:], data[i+2:])
-						data = data[:len(data)-1]
-					}
+			if a+N < len(data)-1 { //если N не выходит за границы слайса
+				for b := 1; b <= N; b++ {
+					outB[a+b] = true //строки после совпадения заносятся в []bool со значением true
 				}
-			} else if len(data)-N != 0 {
-				if v != true {
-					for _, val := range data[i+1:] {
-						output = append(output, val)
-					}
-				} else {
-					data = data[:i+1]
+			} else { // N выходит за границы слайса
+				for b := 1; b <= len(data)-1-a; b++ {
+					outB[a+b] = true //строки после совпадения заносятся в []bool со значением true
 				}
 			}
 		}
 	}
-	if v != true {
-		fmt.Println(output)
-	} else {
-		fmt.Println(data)
+
+	if v != true { //Выводим N строк после совпадения
+		for a, str := range outB {
+			if str == true {
+				out = append(out, data[a])
+			}
+		}
+	} else { //Выводим все строки, кроме N строк после совпадения
+		for a, str := range outB {
+			if str != true {
+				out = append(out, data[a])
+			}
+		}
 	}
+	fmt.Println(out)
+
 }
 
+//Вывод N строк перед совпадением
 func sampleSearchB(data []string, search string, N int, v bool) {
-	output := make([]string, 0, 10)
-	for i, str := range data {
+	outB := make([]bool, 0, len(data)) //слайс для учета N строк перед совмадения
+	for i := 0; i < len(data); i++ {
+		outB = append(outB, false)
+	}
+	out := make([]string, 0, 10)
+
+	for a, str := range data { //поиск совпадений
 		if search == str {
-			if N < (i + 1) {
-				if v != true {
-					for _, val := range data[i-N : i] {
-						output = append(output, val)
-					}
-				} else {
-					for j := 1; j <= N; j++ {
-						copy(data[i-(j+1):], data[i-j:])
-						data = data[:len(data)-1]
-					}
+			if a-N > 0 { //если N не выходит за границы слайса
+				for b := 1; b <= N; b++ {
+					outB[a-b] = true //строки перед совпадением заносятся в []bool со значением true
 				}
-			} else if N-i != 0 {
-				if v != true {
-					for _, val := range data[:i] {
-						output = append(output, val)
-					}
-				} else {
-					data = data[i:]
+			} else { // N вызодит за границы слайса
+				for b := 1; b <= a; b++ {
+					outB[a-b] = true //строки перед совпадением заносятся в []bool со значением true
 				}
 			}
 		}
 	}
-	if v == true {
-		fmt.Println(data)
-	} else {
-		fmt.Println(output)
+
+	if v != true { //Выводим N строк перед совпадением
+		for a, str := range outB {
+			if str == true {
+				out = append(out, data[a])
+			}
+		}
+	} else { //Выводим все строки, кроме N строк перед совпадением
+		for a, str := range outB {
+			if str != true {
+				out = append(out, data[a])
+			}
+		}
 	}
+	fmt.Println(out)
 }
 
+//Вывод N строк перед и после совпадением
 func sampleSearchC(data []string, search string, N int, v bool) {
+	outB := make([]bool, 0, len(data)) //слайс для учета N строк перед/после совмадения
+	for i := 0; i < len(data); i++ {
+		outB = append(outB, false)
+	}
+	out := make([]string, 0, 10)
 
-	if v != true {
-		output := make([]string, 0, 10)
-		for i, str := range data {
-			if search == str {
-				if N < (i+1) && N < len(data)-(i+1) {
-					for _, val := range data[i-N : i] {
-						output = append(output, val)
-					}
-					for _, val := range data[i+1 : i+N+1] {
-						output = append(output, val)
-					}
-				} else if N-i != 0 && N < len(data)-(i+1) {
-					for _, val := range data[:i] {
-						output = append(output, val)
-					}
-					for _, val := range data[i+1 : i+N+1] {
-						output = append(output, val)
-					}
-				} else if N < (i+1) && len(data)-N != 0 {
-					for _, val := range data[i-N : i] {
-						output = append(output, val)
-					}
-					for _, val := range data[i+1:] {
-						output = append(output, val)
-					}
+	for a, str := range data { //поиск совпадений
+		if search == str { //Разметка N строк перед и после совпадения
+			if a-N > 0 { //если N не выходит за границы слайса
+				for b := 1; b <= N; b++ {
+					outB[a-b] = true //строки перед совпадением заносятся в []bool со значением true
+				}
+			} else { // N вызодит за границы слайса
+				for b := 1; b <= a; b++ {
+					outB[a-b] = true //строки перед совпадением заносятся в []bool со значением true
+				}
+			}
+
+			if a+N < len(data)-1 { //если N не выходит за границы слайса
+				for b := 1; b <= N; b++ {
+					outB[a+b] = true //строки после совпадения заносятся в []bool со значением true
+				}
+			} else { // N выходит за границы слайса
+				for b := 1; b <= len(data)-1-a; b++ {
+					outB[a+b] = true //строки после совпадения заносятся в []bool со значением true
 				}
 			}
 		}
-		fmt.Println(output)
 
-	} else {
-		for i, str := range data {
-			if search == str { //ошибка не видит третий who
-				if N < (i+1) && N < len(data)-(i+1) {
-					var j int
-					for j = 1; j <= N; j++ {
-						copy(data[i-(j+1):], data[i-j:])
-						data = data[:len(data)-1]
-					}
-					for k := 0; k < N; k++ {
-						copy(data[(i+1-j):], data[(i+2-j):])
-						data = data[:len(data)-1]
-					}
-				} else if N-i != 0 && N < len(data)-(i+1) {
-					var k int = N - i
-					data = data[i:]
-					for j := 0; j < N; j++ {
-						copy(data[(i+1-k):], data[(i+2-k):])
-						data = data[:len(data)-1]
-					}
-
-				} else if N < (i+1) && len(data)-N != 0 {
-					var j int
-					for j = 1; j <= N; j++ {
-						copy(data[i-(j+1):], data[i-j:])
-						data = data[:len(data)-1]
-					}
-					data = data[:(i + 1 - j)]
-				}
+	}
+	fmt.Println(outB)
+	if v != true { //Выводим N строк перед совпадением
+		for a, str := range outB {
+			if str == true {
+				out = append(out, data[a])
 			}
 		}
-		fmt.Println(data)
-	}
-
-}
-
-/*
-for i, str := range data {
-	if search == str {
-		if N < (i + 1) {
-			for j := 1; j <= N; j++ {
-				copy(data[i-(j+1):], data[i-j:])
-				data = data[:len(data)-1]
+	} else { //Выводим все строки, кроме N строк перед совпадением
+		for a, str := range outB {
+			if str != true {
+				out = append(out, data[a])
 			}
-		} else if N-i != 0 {
-			data = data[i:]
 		}
 	}
+	fmt.Println(out)
 }
-
-for i, str := range data {
-	if search == str {
-		if N < len(data)-(i+1) {
-			for j := 0; j < N; j++ {
-				copy(data[i+1:], data[i+2:])
-				data = data[:len(data)-1]
-			}
-		} else if len(data)-N != 0 {
-			data = data[:i+1]
-
-		}
-	}
-}
-*/
