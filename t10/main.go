@@ -58,16 +58,6 @@ func copyTo(dst io.Writer, src io.Reader) {
 	}
 }
 
-/*
-var handler telnet.Handler = telnet.EchoHandler
-
-	err := telnet.ListenAndServe(":5555", handler)
-	if nil != err {
-		//@TODO: Handle this error better.
-		panic(err)
-	}
-*/
-
 //52.88.68.92:1234
 
 //159.69.204.41:22
