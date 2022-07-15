@@ -1,0 +1,6 @@
+POST BODY 
+{"id":"1231","date":"2019-09-11"}
+{"id":"1231","date":"2019-09-11","newdate":"2019-09-14"}
+
+
+events_for_day?user_id=123&date=2019-09-11

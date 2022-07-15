@@ -24,10 +24,10 @@ func (c *Cache) PutEvent(d string, id string) {
 }
 
 //Получение данных из кеша
-func (c *Cache) GetEvents(d string) (events map[string]struct{}, b bool) {
+func (c *Cache) GetEvents(d string, id string) (event string, b bool) {
 	c.mx.RLock()
 	defer c.mx.RUnlock()
-	events, b = c.Data[d]
+	_, b = c.Data[d][id]
 	return
 }
 
@@ -39,9 +39,10 @@ func (c *Cache) DeleteEvent(d string, id string) {
 }
 
 //Обновление событый
-func (c *Cache) Update(d string, nd string, id string) {
+func (c *Cache) UpdateEvent(d string, nd string, id string) {
 	c.mx.Lock()
 	defer c.mx.Unlock()
+	c.Data[nd] = make(map[string]struct{})
+	c.Data[nd][id] = struct{}{}
 	delete(c.Data[d], id)
-	c.PutEvent(nd, id)
 }
