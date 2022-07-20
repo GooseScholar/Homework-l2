@@ -9,7 +9,7 @@ import (
 )
 
 /*
-Утилита cut
+Утилита wget
 */
 
 func main() {

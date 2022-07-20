@@ -1,4 +1,2 @@
 github.com/joho/godotenv v1.4.0 h1:3l4+N6zfMWnkbPEXKng2o2/MR5mSwTrBih4ZEkkz1lg=
 github.com/joho/godotenv v1.4.0/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
-github.com/urbangopher/middleware v0.0.0-20161010235006-18744b3b049d h1:9kN5Wek63YWqD12xyTSFc0XIjS47RP1JckHHhLGxgU0=
-github.com/urbangopher/middleware v0.0.0-20161010235006-18744b3b049d/go.mod h1:qZ+fIDnvhTPllhtdGtk+7I+GCb74C9ZovNebBaLmmT0=

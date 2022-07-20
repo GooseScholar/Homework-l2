@@ -1,4 +1,4 @@
-module t2
+module t4
 
 go 1.18
 

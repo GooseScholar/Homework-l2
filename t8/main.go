@@ -42,7 +42,7 @@ func main() {
 				if len(command) == 2 {
 					chdir(command[1])
 				} else {
-					fmt.Fprintln(os.Stderr, "invalid entry: expect 2 values, have "+"%d", len(command))
+					fmt.Fprintf(os.Stderr, "invalid entry: expect 2 values, have "+"%d", len(command))
 				}
 			case "kill":
 				if len(command) != 1 {

@@ -41,10 +41,6 @@ func main() {
 	//name := "test.txt"
 	data := readFile(name, b)
 
-	fmt.Println(data)
-	fmt.Println("")
-	fmt.Println(data[4])
-	fmt.Println("")
 	if n == true {
 		sortForNumber(data, k, r)
 	}
@@ -70,7 +66,7 @@ func readFile(name string, b bool) (dataT [][]string) {
 		} else {
 			data = append(data, line)
 		}
-		fmt.Println(line)
+
 		if err != nil {
 			if err == io.EOF {
 				break

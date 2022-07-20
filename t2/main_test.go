@@ -1,6 +1,11 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestUnpack(t *testing.T) {
 	//Arrange тестовая выборка
@@ -45,10 +50,10 @@ func TestUnpack(t *testing.T) {
 	for _, testCase := range testTable {
 		result := pkgString.Unpack(testCase.input)
 
-		//Assert сравнение результата с ожиданием
-		if result != testCase.expected {
-			t.Errorf("Incorrext result. Expect %s, got %s", testCase.expected, result)
-		}
+		t.Logf("Calling Unpack(%v), result %s\n", testCase.input, result)
 
+		//Assert сравнение результата с ожиданием
+		assert.Equal(t, testCase.expected, result,
+			fmt.Sprintf("Incorrext result. Expect %s, got %s", testCase.expected, result))
 	}
 }

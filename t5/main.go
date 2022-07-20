@@ -52,17 +52,18 @@ func main() {
 			fmt.Println(len(data))
 		}
 		if n == true {
-			lineNum(data, search)
+			fmt.Println(lineNum(data, search))
+
 		}
 	} else {
 		if C != 0 {
-			sampleSearchC(data, search, C, v)
+			fmt.Println(sampleSearchC(data, search, C, v))
 		} else if A != 0 && B != 0 {
-			sampleSearchC(data, search, A+B, v)
+			fmt.Println(sampleSearchC(data, search, A+B, v))
 		} else if A != 0 {
-			sampleSearchA(data, search, A, v)
+			fmt.Println(sampleSearchA(data, search, A, v))
 		} else if B != 0 {
-			sampleSearchB(data, search, B, v)
+			fmt.Println(sampleSearchB(data, search, B, v))
 		} else {
 			fmt.Println(data)
 		}
@@ -83,13 +84,13 @@ func readFile(name string, ig, F bool) (data []string) {
 		line, err := buf.ReadString('\n')
 		if ig == true {
 			if F == true {
-				data = append(data, strings.ToLower(line))
+				data = append(data, strings.Trim(strings.ToLower(line), "\n"))
 			} else {
 				data = append(data, strings.TrimSpace(strings.ToLower(line)))
 			}
 		} else {
 			if F == true {
-				data = append(data, line)
+				data = append(data, strings.Trim(line, "\n"))
 			} else {
 				data = append(data, strings.TrimSpace(line))
 			}
@@ -108,19 +109,19 @@ func readFile(name string, ig, F bool) (data []string) {
 }
 
 //Вывод номеров строк совпадения
-func lineNum(data []string, search string) {
+func lineNum(data []string, search string) []int {
 	out := make([]int, 0, 10)
 	for i, str := range data {
 		if search == str {
 			out = append(out, i) //Номерация строк начинается с 0
 		}
 	}
-	fmt.Println(out)
 
+	return out
 }
 
 //Вывод N строк после совпадения
-func sampleSearchA(data []string, search string, N int, v bool) {
+func sampleSearchA(data []string, search string, N int, v bool) []string {
 	outB := make([]bool, 0, len(data)) //слайс для учета N строк после совмадения
 	for i := 0; i < len(data); i++ {
 		outB = append(outB, false)
@@ -154,12 +155,12 @@ func sampleSearchA(data []string, search string, N int, v bool) {
 			}
 		}
 	}
-	fmt.Println(out)
+	return out
 
 }
 
 //Вывод N строк перед совпадением
-func sampleSearchB(data []string, search string, N int, v bool) {
+func sampleSearchB(data []string, search string, N int, v bool) []string {
 	outB := make([]bool, 0, len(data)) //слайс для учета N строк перед совмадения
 	for i := 0; i < len(data); i++ {
 		outB = append(outB, false)
@@ -193,11 +194,11 @@ func sampleSearchB(data []string, search string, N int, v bool) {
 			}
 		}
 	}
-	fmt.Println(out)
+	return out
 }
 
 //Вывод N строк перед и после совпадением
-func sampleSearchC(data []string, search string, N int, v bool) {
+func sampleSearchC(data []string, search string, N int, v bool) []string {
 	outB := make([]bool, 0, len(data)) //слайс для учета N строк перед/после совмадения
 	for i := 0; i < len(data); i++ {
 		outB = append(outB, false)
@@ -228,7 +229,6 @@ func sampleSearchC(data []string, search string, N int, v bool) {
 		}
 
 	}
-	fmt.Println(outB)
 	if v != true { //Выводим N строк перед совпадением
 		for a, str := range outB {
 			if str == true {
@@ -242,5 +242,5 @@ func sampleSearchC(data []string, search string, N int, v bool) {
 			}
 		}
 	}
-	fmt.Println(out)
+	return out
 }
