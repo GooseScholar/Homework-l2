@@ -14,7 +14,7 @@ import (
 	"t11/internal/models"
 )
 
-//создание события
+//CreateEvent создание события
 func CreateEvent(w http.ResponseWriter, r *http.Request, cache *cache.Cache) {
 
 	if r.Method == "POST" {
@@ -55,9 +55,9 @@ func CreateEvent(w http.ResponseWriter, r *http.Request, cache *cache.Cache) {
 		}
 
 		//валидация id пользователя
-		id := jsn.Id
-		mId, _ := regexp.MatchString(`^\d+$`, id)
-		if mId != true {
+		id := jsn.ID
+		mID, _ := regexp.MatchString(`^\d+$`, id)
+		if mID != true {
 			io.WriteString(w, fmt.Sprintf(string(eventerrors.OutNewError("invalid id format", "id validation"))))
 			return
 		}

@@ -106,9 +106,9 @@ func sortForNumber(t [][]string, k int, r bool) {
 
 		if r == true {
 			return a > b
-		} else {
-			return a < b
 		}
+		return a < b
+
 	})
 }
 
@@ -135,8 +135,8 @@ func sortForMonth(t [][]string, k int, r bool) {
 
 		if r == true {
 			return a > b
-		} else {
-			return a < b
 		}
+		return a < b
+
 	})
 }

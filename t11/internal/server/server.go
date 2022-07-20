@@ -13,7 +13,8 @@ import (
 type httpServer struct {
 }
 
-func NewHttpServer(ctx context.Context, cache *cache.Cache) *httpServer {
+//NewHTTPServer запуск http сервера
+func NewHTTPServer(ctx context.Context, cache *cache.Cache) {
 	ServerMux := http.NewServeMux()
 
 	ServerMux.HandleFunc("/create_event", func(w http.ResponseWriter, r *http.Request) {
@@ -42,5 +43,5 @@ func NewHttpServer(ctx context.Context, cache *cache.Cache) *httpServer {
 		}
 	}()
 
-	return &httpServer{}
+	return
 }

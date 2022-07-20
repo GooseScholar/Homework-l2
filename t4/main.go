@@ -17,7 +17,7 @@ func main() {
 	fmt.Println(m)
 }
 
-//Поиск и возврат всех анаграмм по группам
+//AnagramsSearch поиск и возврат всех анаграмм по группам
 func AnagramsSearch(slice []string) (answer map[string][]string) {
 	answer = make(map[string][]string)
 

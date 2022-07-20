@@ -12,7 +12,7 @@ import (
 	"t11/internal/models"
 )
 
-//Проверить отмеченно ли событие в текущую дату
+//EventsForDay проверить отмеченно ли событие в текущую дату
 func EventsForDay(w http.ResponseWriter, r *http.Request, cache *cache.Cache) {
 	if r.Method == "GET" {
 
@@ -42,8 +42,8 @@ func EventsForDay(w http.ResponseWriter, r *http.Request, cache *cache.Cache) {
 
 		//валидация id пользователя
 		id := r.FormValue("user_id")
-		mId, _ := regexp.MatchString(`^\d+$`, id)
-		if mId != true {
+		mID, _ := regexp.MatchString(`^\d+$`, id)
+		if mID != true {
 			io.WriteString(w, fmt.Sprintf(string(eventerrors.OutNewError("invalid id format", "id validation"))))
 			return
 		}

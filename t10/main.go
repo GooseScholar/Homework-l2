@@ -59,16 +59,17 @@ func main() {
 	greacefulShutdown := make(chan os.Signal, 1)
 
 	done := make(chan bool)
-	signal.Notify(greacefulShutdown, syscall.SIGQUIT)
+	signal.Notify(greacefulShutdown, os.Interrupt, syscall.SIGINT)
 	go func() {
 		for {
 			select {
 			case <-timeIsOver:
-				fmt.Println("Время истекло")
+				log.Println("Время истекло")
 				done <- true
 				return
 			case <-greacefulShutdown:
-				fmt.Println("Сигнал остановки")
+				sig := <-greacefulShutdown
+				log.Println("\nGot signal:", sig)
 				done <- true
 				return
 			default:
@@ -78,9 +79,9 @@ func main() {
 				if err == nil {
 					buf := bufio.NewReader(conn)
 					for {
-						fmt.Println("1")
+
 						line, err := buf.ReadBytes(byte('\n'))
-						fmt.Println("2")
+
 						if err != nil {
 							if err == io.EOF {
 								break
@@ -90,7 +91,7 @@ func main() {
 							}
 						}
 						out = append(out, string(line))
-						//time.Sleep(500 * time.Millisecond)
+
 					}
 					fmt.Println(strings.Join(out, ""))
 					done <- true
@@ -101,87 +102,4 @@ func main() {
 		}
 	}()
 	<-done
-
-	//conn, _ := telnet.DialTo(os.Args[6] + ":" + os.Args[7])
-	//conn, _ := telnet.DialTimeout(os.Args[6]+":"+os.Args[7], time.Duration(timeout*int(time.Second)))
-	//defer conn.Close()
-
 }
-
-//52.88.68.92:1234
-//djxmmx.net:17
-//159.69.204.41:22
-//"opennet.ru:80"
-
-func DoWithTries(fn func() error, delay time.Duration) (err error) {
-	for {
-		if err = fn(); err != nil {
-			time.Sleep(500 * time.Millisecond)
-
-			continue
-		}
-		return
-	}
-
-}
-
-/*
-err = DoWithTries(func() error {
-		_, cancle := context.WithTimeout(context.Background(), time.Duration(timeout*int(time.Second)))
-		defer cancle()
-
-		conn, err = telnet.DialTo(os.Args[6] + ":" + os.Args[7])
-		if err != nil {
-			return err
-		}
-		defer conn.Close()
-		buf := bufio.NewReader(conn)
-		for {
-			line, err := buf.ReadBytes(byte('\n'))
-
-			out = append(out, string(line))
-
-			if err != nil {
-				if err == io.EOF {
-					break
-				} else {
-					log.Printf("Ошибка чтения сокета: %v\n", err)
-					return err
-				}
-			}
-
-		}
-		fmt.Println(strings.Join(out, ""))
-		return nil
-	}, time.Duration(timeout*int(time.Second)))
-	if err != nil {
-		log.Println(err)
-		conn.Close()
-		return
-	}
-*/
-/*
-out := make([]string, 0, 4)
-	conn, err = telnet.DialTo(os.Args[6] + ":" + os.Args[7])
-	if err != nil {
-		return
-	}
-	defer conn.Close()
-	buf := bufio.NewReader(conn)
-	for {
-		line, err := buf.ReadBytes(byte('\n'))
-
-		out = append(out, string(line))
-
-		if err != nil {
-			if err == io.EOF {
-				break
-			} else {
-				log.Printf("Ошибка чтения сокета: %v\n", err)
-				return
-			}
-		}
-
-	}
-	fmt.Println(strings.Join(out, ""))
-*/

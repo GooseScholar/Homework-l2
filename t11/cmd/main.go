@@ -22,7 +22,7 @@ func main() {
 
 	cache := cache.NewCache()
 
-	server.NewHttpServer(ctx, cache)
+	server.NewHTTPServer(ctx, cache)
 
 	<-ctx.Done()
 
